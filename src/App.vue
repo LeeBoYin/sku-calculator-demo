@@ -1,10 +1,15 @@
 <template>
 	<div id="app">
-		<label>
-			<input type="checkbox" v-model="isMultiSku">
-			Multiple color
-		</label>
-		<button @click="resetAll" class="btn">Deselect All</button>
+		<div class="control">
+			<label class="switch">
+				<input type="checkbox" v-model="isMultiSku">
+				<span>Multiple color</span>
+			</label>
+			<button @click="resetAll" class="btn">Deselect All</button>
+		</div>
+		<!--<div class="info">-->
+			<!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab architecto culpa deleniti eaque eos, eum id ipsam itaque magnam minima nemo nesciunt pariatur perspiciatis quas quia sapiente sint sit voluptatibus.-->
+		<!--</div>-->
 		<div class="option-section">
 			<!-- single choice specs -->
 			<div v-for="(values, name) in singleChoiceSpecs" :key="'spec-row-' + name" class="spec-row">
@@ -20,32 +25,42 @@
 			</div>
 			<!-- multiple choice amount -->
 			<div v-if="isMultiSku" class="spec-row">
+				<div class="spec-name">{{ multiChoiceSpecName }}</div>
 				<div
 					v-for="value in multiChoiceSpec"
 					:key="'spec-name-' + value">
 					<label>
 						{{ value }}
-						<span v-if="specStatus[multiChoiceSpecName][value].selectable">
-								<template v-if="specStatus[multiChoiceSpecName][value].lowestPrice === specStatus[multiChoiceSpecName][value].highestPrice">
-									${{ specStatus[multiChoiceSpecName][value].lowestPrice }}
-								</template>
-								<template v-else>
-									from ${{ specStatus[multiChoiceSpecName][value].lowestPrice }} to ${{ specStatus[multiChoiceSpecName][value].highestPrice }}
-								</template>
-							</span>
 						<input class="amount-input" type="number" v-model="amount[value]" min="0" :max="specStatus[multiChoiceSpecName][value].maxAmount" :disabled="!specStatus[multiChoiceSpecName][value].selectable" />
-						<sub v-if="specStatus[multiChoiceSpecName][value].selectable">(max: {{ specStatus[multiChoiceSpecName][value].maxAmount }})</sub>
+						<small v-if="specStatus[multiChoiceSpecName][value].selectable && !specStatus[multiChoiceSpecName][value].insufficient">
+							<template v-if="specStatus[multiChoiceSpecName][value].lowestPrice === specStatus[multiChoiceSpecName][value].highestPrice">
+								${{ specStatus[multiChoiceSpecName][value].lowestPrice }}
+							</template>
+							<template v-else>
+								from ${{ specStatus[multiChoiceSpecName][value].lowestPrice }} to ${{ specStatus[multiChoiceSpecName][value].highestPrice }}
+							</template>
+						</small>
+						<small v-if="specStatus[multiChoiceSpecName][value].selectable">(max: {{ specStatus[multiChoiceSpecName][value].maxAmount }})</small>
 					</label>
 				</div>
 			</div>
 			<!-- single choice amount -->
 			<div v-if="!isMultiSku" class="spec-row">
-				<div class="spec-name">Amount</div>
+				<div class="spec-name">amount</div>
 				<div>
 					<input class="amount-input" type="number" v-model="amount" min="1" :max="statistics.maxAmount" />
-					<sub>(max: {{ statistics.maxAmount }})</sub>
+					<small>
+						<template v-if="statistics.lowestPrice === statistics.highestPrice">
+							${{ statistics.lowestPrice }}
+						</template>
+						<template v-else>
+							from ${{ statistics.lowestPrice }} to ${{ statistics.highestPrice }}
+						</template>
+					</small>
+					<small>(max: {{ statistics.maxAmount }})</small>
 				</div>
 			</div>
+			<button :class="{ disabled: !isDetermined }" class="btn">Add to Cart</button>
 		</div>
 	</div>
 </template>
@@ -55,7 +70,6 @@ import Vue from 'vue';
 import _ from 'lodash';
 import SkuCalculator from '@leeboyin/sku-calculator';
 import data from './data';
-// create SkuCalculator instance
 const skuCalculator = new SkuCalculator(data);
 export default {
 	data() {
@@ -71,6 +85,9 @@ export default {
 		};
 	},
 	computed: {
+		isDetermined() {
+			return !_.isEmpty(this.statistics.determinedAmount);
+		},
 		singleChoiceSpecs() {
 			if(!this.isMultiSku) {
 				return this.specs;
@@ -190,72 +207,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-	.spec-row {
-		margin-bottom: 5px;
-	}
-	.spec-name {
-		font-size: 18px;
-		margin-right: 10px;
-		margin-bottom: 10px;
-		color: #666;
-	}
-	.spec-value {
-		display: inline-block;
-		text-align: center;
-		padding: 8px 16px;
-		margin-right: 10px;
-		margin-bottom: 15px;
-		border: 1px solid #CCC;
-		border-radius: 4px;
-		cursor: pointer;
-	}
-	.spec-value.selected {
-		position: relative;
-		background-color: #26bec9;
-		border-color: #26bec9;
-		color: #fff;
-	}
-	.spec-value.selected:after {
-		content: '';
-		position: absolute;
-		top: 3px;
-		right: 3px;
-		border-width: 5px;
-		border-style: solid;
-		border-color: #fff #fff transparent transparent;
-	}
-	.spec-value.disabled {
-		border-color: #eee;
-		cursor: default;
-		color: #ccc;
-	}
-	.lowest-price {
-		color: #666;
-		font-size: 12px;
-	}
-	.spec-value.selected .lowest-price {
-		color: #fff;
-		opacity: 0.8;
-	}
-	.spec-value.disabled .lowest-price {
-		color: #CCC;
-	}
-	.amount-input {
-		height: 42px;
-		width: 82px;
-		padding: 8px 12px;
-		border-radius: 4px;
-		box-shadow: none;
-		border: 1px solid #e1e1e1;
-		font-size: 22px;
-		text-align: center;
-		outline: none;
-		margin-left: 10px;
-		margin-bottom: 10px;
-	}
-	.amount-input:focus {
-		border-color: #26bec9;
-	}
-</style>
