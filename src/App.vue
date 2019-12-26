@@ -6,6 +6,7 @@
 				<span>Multiple color</span>
 			</label>
 			<button @click="resetAll" class="btn">Deselect All</button>
+			<a href="https://github.com/LeeBoYin/sku-calculator-demo" target="_blank">View on GitHub →</a>
 		</div>
 		<!--<div class="info">-->
 			<!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab architecto culpa deleniti eaque eos, eum id ipsam itaque magnam minima nemo nesciunt pariatur perspiciatis quas quia sapiente sint sit voluptatibus.-->
