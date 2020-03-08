@@ -13,7 +13,7 @@ body {
 #app {
 	display: grid;
 	grid-template-columns: 200px 1fr 200px;
-	grid-template-rows: auto 1fr auto;
+	grid-template-rows: auto auto 1fr auto;
 	grid-template-areas:
 		"title		title 		title"
 		"control	option		x"

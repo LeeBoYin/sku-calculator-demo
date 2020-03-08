@@ -31,6 +31,7 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
+			favicon: './static/favicon.ico',
 		}),
 		new VueLoaderPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
