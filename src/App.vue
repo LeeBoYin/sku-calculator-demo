@@ -1,16 +1,23 @@
 <template>
 	<div id="app">
+		<h1 class="title">@leeboyin/sku-calculator Demo</h1>
 		<div class="control">
 			<label class="switch">
 				<input type="checkbox" v-model="isMultiSku">
 				<span>Multiple color</span>
 			</label>
 			<button @click="resetAll" class="btn">Deselect All</button>
-			<a href="https://github.com/LeeBoYin/sku-calculator-demo" target="_blank">View on GitHub →</a>
+			<hr>
+			<a href="https://github.com/LeeBoYin/sku-calculator" target="_blank">View on GitHub →</a>
+			<a href="https://www.npmjs.com/package/@leeboyin/sku-calculator" target="_blank">View on npm →</a>
 		</div>
-		<!--<div class="info">-->
-			<!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab architecto culpa deleniti eaque eos, eum id ipsam itaque magnam minima nemo nesciunt pariatur perspiciatis quas quia sapiente sint sit voluptatibus.-->
-		<!--</div>-->
+		<div class="info">
+			<ul>
+				<li>
+					Total Price: ${{ totalPrice }}
+				</li>
+			</ul>
+		</div>
 		<div class="option-section">
 			<!-- single choice specs -->
 			<div v-for="(values, name) in singleChoiceSpecs" :key="'spec-row-' + name" class="spec-row">
@@ -32,7 +39,7 @@
 					:key="'spec-name-' + value">
 					<label>
 						{{ value }}
-						<input class="amount-input" type="number" v-model="amount[value]" min="0" :max="specStatus[multiChoiceSpecName][value].maxAmount" :disabled="!specStatus[multiChoiceSpecName][value].selectable" />
+						<input class="amount-input" type="number" v-model.number="amount[value]" min="0" :max="specStatus[multiChoiceSpecName][value].maxAmount" :disabled="!specStatus[multiChoiceSpecName][value].selectable" />
 						<small v-if="specStatus[multiChoiceSpecName][value].selectable && !specStatus[multiChoiceSpecName][value].insufficient">
 							<template v-if="specStatus[multiChoiceSpecName][value].lowestPrice === specStatus[multiChoiceSpecName][value].highestPrice">
 								${{ specStatus[multiChoiceSpecName][value].lowestPrice }}
@@ -49,7 +56,7 @@
 			<div v-if="!isMultiSku" class="spec-row">
 				<div class="spec-name">amount</div>
 				<div>
-					<input class="amount-input" type="number" v-model="amount" min="1" :max="statistics.maxAmount" />
+					<input class="amount-input" type="number" v-model.number="amount" min="1" :max="statistics.maxAmount" />
 					<small>
 						<template v-if="statistics.lowestPrice === statistics.highestPrice">
 							${{ statistics.lowestPrice }}
@@ -61,7 +68,7 @@
 					<small>(max: {{ statistics.maxAmount }})</small>
 				</div>
 			</div>
-			<button :class="{ disabled: !isDetermined }" class="btn">Add to Cart</button>
+			<button class="btn" @click="submit">{{ btnText }}</button>
 		</div>
 	</div>
 </template>
@@ -76,7 +83,9 @@ export default {
 	data() {
 		return {
 			amount: null,
+			btnText: 'Add to Cart',
 			isMultiSku: true,
+			isSubmitted: false,
 			multiChoiceSpecName: 'color',
 			selectedSpec: {},
 			skus: data.skus,
@@ -89,16 +98,13 @@ export default {
 		isDetermined() {
 			return !_.isEmpty(this.statistics.determinedAmount);
 		},
-		singleChoiceSpecs() {
-			if(!this.isMultiSku) {
-				return this.specs;
-			}
-			const clonedSpecs = _.cloneDeep(this.specs);
-			delete(clonedSpecs[this.multiChoiceSpecName]);
-			return clonedSpecs;
-		},
 		multiChoiceSpec() {
 			return this.isMultiSku ? this.specs[this.multiChoiceSpecName] : null;
+		},
+		totalPrice() {
+			return _.reduce(this.statistics.determinedAmount, (sum, amount, skuIdx) => {
+				return sum += amount * this.skus[skuIdx].price;
+			}, 0);
 		},
 		selectionArray() {
 			let selectionArray = [];
@@ -145,6 +151,14 @@ export default {
 			});
 
 			return selectionArray;
+		},
+		singleChoiceSpecs() {
+			if(!this.isMultiSku) {
+				return this.specs;
+			}
+			const clonedSpecs = _.cloneDeep(this.specs);
+			delete(clonedSpecs[this.multiChoiceSpecName]);
+			return clonedSpecs;
 		},
 	},
 	watch: {
@@ -204,6 +218,18 @@ export default {
 			} else {
 				this.amount = 1;
 			}
+		},
+		submit() {
+			if(!this.isDetermined || this.isSubmitted) {
+				return;
+			}
+
+			this.btnText = `Total price: ${ this.totalPrice }, Thank you!`;
+			this.isSubmitted = true;
+			setTimeout(() => {
+				this.btnText = 'Add to Cart';
+				this.isSubmitted = false;
+			}, 3000);
 		},
 	},
 };

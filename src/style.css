@@ -15,23 +15,33 @@ body {
 	grid-template-columns: 200px 1fr 200px;
 	grid-template-rows: auto 1fr auto;
 	grid-template-areas:
+		"title		title 		title"
 		"control	option		x"
 		"y			option		x"
 		"y			option		info";
-	grid-gap: 40px;
+	grid-gap: 30px;
 	max-width: 1000px;
 	margin: 0 auto;
 	padding: 20px;
+}
+
+.title {
+	grid-area: title;
+	margin: 0;
 }
 
 .control {
 	grid-area: control;
 	/*grid-row-end: 2;*/
 	position: sticky;
-	top: 0;
+	top: 20px;
 	background-color: rgba(0, 0, 0, .1);
 	border-radius: 10px;
 	padding: 20px 30px;
+}
+
+.control a {
+	display: block;
 }
 
 .switch {
@@ -89,7 +99,7 @@ body {
 	grid-area: info;
 	/*grid-row-start: 3;*/
 	position: sticky;
-	bottom: 0;
+	bottom: 20px;
 	color: #999;
 }
 
@@ -172,7 +182,6 @@ body {
 a {
 	display: inline-block;
 	padding: 5px 0;
-	margin-top: 15px;
 	text-decoration: none;
 	color: #333333;
 	font-weight: bold;
@@ -180,4 +189,8 @@ a {
 
 a:hover {
 	text-decoration: underline;
+}
+
+hr {
+	margin: 20px 0;
 }
