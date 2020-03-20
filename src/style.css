@@ -12,13 +12,13 @@ body {
 
 #app {
 	display: grid;
-	grid-template-columns: 200px 1fr 200px;
+	grid-template-columns: 1fr;
 	grid-template-rows: auto auto 1fr auto;
 	grid-template-areas:
-		"title		title 		title"
-		"control	option		x"
-		"y			option		x"
-		"y			option		info";
+		"title"
+		"control"
+		"option"
+		"info";
 	grid-gap: 30px;
 	max-width: 1000px;
 	margin: 0 auto;
@@ -32,8 +32,6 @@ body {
 
 .control {
 	grid-area: control;
-	/*grid-row-end: 2;*/
-	position: sticky;
 	top: 20px;
 	background-color: rgba(0, 0, 0, .1);
 	border-radius: 10px;
@@ -97,10 +95,7 @@ body {
 
 .info {
 	grid-area: info;
-	/*grid-row-start: 3;*/
-	position: sticky;
 	bottom: 20px;
-	color: #999;
 }
 
 .option-section {
@@ -193,4 +188,28 @@ a:hover {
 
 hr {
 	margin: 20px 0;
+}
+
+@media only screen and (min-width: 768px) {
+	#app {
+		grid-template-columns: 200px 1fr;
+		grid-template-areas:
+			"title		title "
+			"control	option"
+			"x			option"
+			"info		option";
+	}
+	.info, .control {
+		position: sticky;
+	}
+}
+@media only screen and (min-width: 992px) {
+	#app {
+		grid-template-columns: 200px 1fr 200px;
+		grid-template-areas:
+			"title		title 		title"
+			"control	option		x"
+			"y			option		x"
+			"y			option		info";
+	}
 }
