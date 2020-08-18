@@ -24,7 +24,7 @@
 				<div class="spec-name">{{ name }}</div>
 				<div
 					v-for="value in values"
-					:title="getSpecHint(name, value)"
+					v-tooltip="getSpecHint(name, value)"
 					:key="'spec-name-' + value"
 					:class="{ selected: selectedSpec[name] === value, disabled: !checkIsSpecSelectable(name, value) }"
 					class="spec-value" @click="onClickSpec(name, value)">
